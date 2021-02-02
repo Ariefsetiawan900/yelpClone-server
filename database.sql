@@ -23,3 +23,9 @@ CREATE TABLE reviews (
 );
 
 INSERT INTO reviews (restaurants_id, name, review, rating) VALUES (13, 'bang jago', 'wueenak tenan iki', 4);
+
+-- count total rating
+Select * from restaurants  left join (select restaurants_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurants_id ) reviews on restaurants.id = reviews. restaurants_id;
+
+-- get a data 
+Select * from restaurants  left join (select restaurants_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurants_id ) reviews on restaurants.id = reviews.restaurants_id where id = 17;

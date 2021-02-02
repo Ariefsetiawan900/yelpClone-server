@@ -14,12 +14,19 @@ app.use(cors());
 app.get("/api/v1/restaurants", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM restaurants");
-    // console.log(result);
+
+    const restaurantRatingData = await db.query(
+      "select * from restaurants  left join (select restaurants_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurants_id ) reviews on restaurants.id = reviews.restaurants_id;"
+    );
+
+    // console.log("Result", result);
+    // console.log("Restaurant data", restaurantRatingData);
+
     res.status(200).json({
       status: "success",
-      result: result.rows.length,
+      result: restaurantRatingData.rows.length,
       data: {
-        restaurants: result.rows,
+        restaurants: restaurantRatingData.rows,
       },
     });
   } catch (err) {
@@ -31,8 +38,13 @@ app.get("/api/v1/restaurants", async (req, res) => {
 app.get("/api/v1/restaurants/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    // const restaurants = await db.query(
+    //   "SELECT * FROM restaurants WHERE id = $1",
+    //   [id]
+    // );
+
     const restaurants = await db.query(
-      "SELECT * FROM restaurants WHERE id = $1",
+      "Select * from restaurants  left join (select restaurants_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurants_id ) reviews on restaurants.id = reviews.restaurants_id where id = $1;",
       [id]
     );
 
@@ -113,7 +125,7 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
   }
 });
 
-// add reviews
+// add  a review
 app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
   try {
     const { id } = req.params;
