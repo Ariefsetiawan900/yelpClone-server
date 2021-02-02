@@ -2,14 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const cors =require('cors')
+const cors = require("cors");
 const Port = process.env.PORT || 4000;
 const db = require("./db");
 
-
 app.use(morgan("tiny"));
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 // get all restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
@@ -32,19 +31,21 @@ app.get("/api/v1/restaurants", async (req, res) => {
 app.get("/api/v1/restaurants/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const restaurants = await db.query("SELECT * FROM restaurants WHERE id = $1", [
-      id,
-    ]);
+    const restaurants = await db.query(
+      "SELECT * FROM restaurants WHERE id = $1",
+      [id]
+    );
 
-    const reviews = await db.query("SELECT * FROM reviews WHERE restaurants_id = $1", [
-      id,
-    ]);
+    const reviews = await db.query(
+      "SELECT * FROM reviews WHERE restaurants_id = $1",
+      [id]
+    );
 
     res.status(200).json({
       status: "success",
       data: {
         restaurants: restaurants.rows[0],
-        reviews: reviews.rows
+        reviews: reviews.rows,
       },
     });
   } catch (err) {
@@ -106,6 +107,29 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
     ]);
     res.status(204).json({
       status: "success",
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+});
+
+// add reviews
+app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, review, rating } = req.body;
+
+    const newReview = await db.query(
+      "INSERT INTO reviews (restaurants_id, name, review, rating) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [id, name, review, rating]
+    );
+
+    console.log(newReview);
+    res.status(201).json({
+      status: "Success",
+      data: {
+        review: newReview.rows[0],
+      },
     });
   } catch (err) {
     console.log(err.message);

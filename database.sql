@@ -21,3 +21,5 @@ CREATE TABLE reviews (
     review TEXT NOT NULL,
     rating INT NOT NULL check(rating >= 1 and rating <= 5)
 );
+
+INSERT INTO reviews (restaurants_id, name, review, rating) VALUES (13, 'bang jago', 'wueenak tenan iki', 4);
