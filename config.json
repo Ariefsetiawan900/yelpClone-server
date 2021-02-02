@@ -1,0 +1,10 @@
+{
+    "production":{
+        "username":"uyystnkrkbpfiq",
+        "password":"248a4827ea999db0ca29925d9ba11682cc5ba421c0d08a0a90af49d526885e5f",
+        "database":"d6a7qljud4iugk",
+        "host":"ec2-23-20-129-146.compute-1.amazonaws.com",
+        "dialect":"postgres"
+        
+    }
+}
